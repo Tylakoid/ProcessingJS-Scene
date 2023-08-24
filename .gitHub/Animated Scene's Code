@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<!-- This is based on DillingerLee's great template here:
+https://github.com/Team-Code/KA_Offline -->
+<html>
+ <head>
+    <title>Draw anything using Processing.js</title>
+
+</head>
+ <body>
+    <p align="center">
+	<!--This draws the Canvas on the webpage -->
+      <canvas id="mycanvas"></canvas>
+    </p>
+ </body>
+ <script src="https://cdn.jsdelivr.net/processing.js/1.4.8/processing.min.js"></script>
+
+ <script>
+    var sketchProc = function(processingInstance) {
+     with (processingInstance) {
+        size(1000, 800);
+        frameRate(30);
+//start here
+
+//sprite (main character) - you
+var font=createFont("monospace");//font for dialogue
+var ySprite=mouseY;//y-position for drawMain
+var xSprite=mouseX;//x-position for drawMain
+var drawMain=function(xSprite,ySprite){
+fill(225,153,51);//body colour
+ellipse(xSprite,ySprite,150,120);//body
+fill(0,0,0);//eye colour
+ellipse(xSprite-28,ySprite-10,25,40);
+ellipse(xSprite+28,ySprite-10,25,40);//eyes
+fill(225,225,225);//eye insidecolour
+ellipse(xSprite-26,ySprite-15,15,17);
+ellipse(xSprite+30,ySprite-15,15,17);//eyes inside
+fill(77,38,0);//shoe colour
+ellipse(xSprite-50,ySprite+50,40,30);
+ellipse(xSprite+50,ySprite+50,40,30);//shoes
+stroke(0,0,0);//mouth/stem colour
+strokeWeight(3);
+line(xSprite,ySprite-61,xSprite-20,ySprite-101);//stem
+line(xSprite-25,ySprite+25,xSprite+25,ySprite+25);//mouth
+//end of spite of main character
+fill(225,225,225);//colour of text
+textSize(35);
+text("You",xSprite-25,ySprite-65);//name
+};
+
+//sprite side character - NPC
+var ySide =520;//y-position of side character
+var xSide=250;//x-position of side character
+var speed=3;//how much the x-position moves (used in the draw function)
+var move=1;//how much the y-position moves (used in the draw function)
+var drawSide=function(){
+fill(204, 187, 112);
+ellipse(xSide,ySide,150,120);//body
+fill(0,0,0);
+ellipse(xSide-28,ySide-10,25,40);
+ellipse(xSide+28,ySide-10,25,40);//eyes
+fill(225,225,225);
+ellipse(xSide-26,ySide-15,15,17);
+ellipse(xSide+30,ySide-15,15,17);//eyes inside
+fill(77,38,0);
+ellipse(xSide-50,ySide+50,40,30);
+ellipse(xSide+50,ySide+50,40,30);//shoes
+stroke(0,0,0);
+strokeWeight(3);
+line(xSide-25,ySide+25,xSide+25,ySide+25);//mouth
+fill(0,153,51);//colour of leaf
+arc(xSide-5,ySide-65,50,50,TWO_PI-PI/4,TWO_PI+3*PI/4);//leaf
+//end of side character design
+if(xSide<700 && xSide>500){
+  fill(225,225,225);
+  textSize(30);
+text("What is that!?",xSide-80,ySide-100);//starting dialogue
+} else if(xSide<500){
+  fill(225,225,225);
+  textFont(font,20);
+  text("(Drag 'You' to the right side)",xSide-140,ySide-100);//mid dialogue
+}else if(xSide>700){
+  fill(225,225,225);
+  textFont(font,20);
+  text("Drag your mouse over them",xSide-110,ySide-120);
+  text("to shoo them away!",xSide-80,ySide-100);//end dialogue
+}
+};
+
+//sprite crows
+var xBird=random(200,700);//random x-position for drawBird
+var yBird=random(150,500);//random y-position for drawBird
+var colourB= color(0,0,0);//colour of bird's wings
+var drawBird=function(xBird,yBird,colourB){
+  stroke(0,0,0);
+  fill(0,0,0);
+  arc(xBird,yBird,130,130,TWO_PI-PI/4,TWO_PI+3*PI/4);//body
+  fill(colourB);
+  arc(xBird-10,yBird-10,70,70,0,PI);//wings
+   fill(225,153,51);
+  triangle(xBird+60,yBird,xBird+60,yBird+26,xBird+85,yBird+13);//beak
+  fill(225,225,225);
+  ellipse(xBird+45,yBird-5,20,20);//eyes
+};
+
+//sprite clouds
+//First Cloud
+var cloudY=150;//y-position of drawClouds
+var cloudX=50;//x-position of drawClouds
+var drift=2;//movement of drawcloud's x-position (used in the draw function)
+var drawClouds=function(){
+  fill(225,225,225);
+  stroke(225,225,225);
+  ellipse(cloudX,cloudY-25,140,140);//part of cloud
+  ellipse(cloudX+100,cloudY,70,70);
+  ellipse(cloudX+50,cloudY-25,140,140);
+  ellipse(cloudX-50,cloudY,70,70);
+};
+//Second Cloud
+var cloudYTwo=150;//y-position of drawCloudsTwo
+var cloudXTwo=-500;//x-position of drawCloudsTwo
+var driftTwo=2;//movement of drawcloudTwo's x-position (used in the draw function)
+var drawCloudsTwo=function(){
+  fill(225,225,225);
+  stroke(225,225,225);
+  ellipse(cloudXTwo,cloudYTwo-25,140,140);//part of cloud
+  ellipse(cloudXTwo+100,cloudYTwo,70,70);
+  ellipse(cloudXTwo+50,cloudYTwo-25,140,140);
+  ellipse(cloudXTwo-50,cloudYTwo,70,70);
+};
+
+//fire Sprite - "helps shoo the crows away"
+var yFire=mouseX;//x position of fire
+var xFire=mouseY;//y position of fire
+var wFire=25;//width of fire
+var hFire=25;//height of fire
+var area=5;//The area of the fire
+var drawFire=function(xFire,yFire,wFire,hFire){
+  stroke(0,0,0);
+  fill(255,0,0);
+  ellipse(xFire,yFire,wFire,hFire);//ellipse which appears when you drag your mouse
+};
+
+//Sprite Scarecrow
+var xScare=700;//x-position of drawScarecrow
+var yScare=225;//y-position of drawScarecrow
+var Swidth=75;//width of drawScarecrow
+var Sheight=15;//height of drawScarecrow
+var r=0;//r,g,b colours, to change the colour in the draw function
+var g=225;
+var b=225;
+var drawScarecrow=function(){
+  stroke(0,0,0);
+  fill(168,102,50);
+  rect(xScare+25,yScare+300,Swidth,Sheight);//arms
+  rect(xScare+150,yScare+300,Swidth,Sheight);
+  fill(color(r,g,b));
+  rect(xScare+100,yScare+300,Swidth-25,Sheight+85);//body
+  fill(194,131,83);
+  ellipse(xScare+125,yScare+270,Swidth,Sheight+60);//head
+  fill(0,0,0);
+  ellipse(xScare+140,yScare+265,Swidth-70,Sheight-5);//eyes
+  ellipse(xScare+110,yScare+265,Swidth-70,Sheight-5);
+  fill(232,181,39);
+  triangle(Swidth+700,Sheight+460,Swidth+750,Sheight+400,Swidth+800,Sheight+460);//hat
+};
+
+//animation starts
+draw=function(){
+  stroke(0,0,0);
+  background(0,0,128);//sky (background)
+  fill(109,113,120);
+  var x=-40;
+  var y=550;
+  while(x<1000){
+    pushMatrix();
+    translate(x,y);
+    rotate(5);
+    rect(0,0,130,150);
+    popMatrix();
+    x+=140;
+    y+=42;
+  }//footpath
+  fill(255,255,77);
+  ellipse(175,310,35,35);//streetlight's light
+  fill(0,0,0);
+  rect(100,220,12,530);//streetlight's vertical pole
+  rect(100,260,100,12);//streetlight's horizontal pole
+  triangle(175,265,140,310,210,310);//streetlight's cover of light
+  triangle(106,710,51,775,161,775);//streetlight's base of pole
+  rect(500,520,5,50);//legs of bench(left bottom)
+  rect(540,470,5,50);//(left top)
+  rect(660,525,5,50);//(right bottom)
+  rect(710,470,5,50);//last arm of bench
+  fill(130,72,13);
+  var yBench=400;//y-position of the top half of the bench
+  while(yBench>330){
+    rect(535,yBench+50,200,15);
+    yBench-=15;
+  }//wooden top half of the bench
+  //loops the timber, so that the y-position changes slightly each time.
+  var yHalfbench=400;//x-position of the bottom half of the bench
+  var xHalfbench=250;//y-position of the bottom half of the bench
+  while(yHalfbench>345){
+    rect(xHalfbench+225,yHalfbench+110,200,15);
+    yHalfbench-=15;
+    xHalfbench+=15;
+  }//wooden bottom half of the bench
+    //loops the timber, so that the y-position and x-position changes slightly each time.
+  //end of background
+  if(r<226){
+    r++;
+  }//changes the r value in r,g,b for the drawScarecrow's body
+  if(g>-1){
+    g--;
+  }//changes the g value in r,g,b for the drawScarecrow's body
+  if(b>-1){
+    b--;
+  }//changes the b value in r,g,b for the drawScarecrow's body
+  drawScarecrow(Swidth,Sheight);//draws the drawScarecrow function
+
+  drawSide(225,525);//draws the drawSide function
+  if(xSide>650){
+    speed-=3/20;
+    move-=1/20;
+  }//move the side character backwards (and up).
+  if(xSide<520){
+       speed+=3/40;
+       move+=1/40;
+     }//moves side character forward (and down).
+  ySide=ySide+move;//the changes in ySide and xSide, by variables speed and move, which are changed above
+  xSide=xSide+speed;
+
+  var ySprite=mouseY;//I'm not sure why the code doesn't work when I get ride of these variables (I already have them listed as a global variable at the top)
+  var xSprite=mouseX;
+  drawMain(xSprite,ySprite);//draws drawMain to follow the mouse
+  drawClouds(cloudX,cloudY);//draws the clouds
+  drawCloudsTwo(cloudX,cloudY);
+  if(cloudX>250){
+      drift+=1/1000;
+    }//movement of first cloud
+  if(cloudXTwo>250){
+      driftTwo+=1/1000;
+    }//movement of second cloud which appears on the canvas after drawClouds
+    cloudXTwo=cloudXTwo+driftTwo;//Shows that cloudX and cloudTwo is changing, because the value of drift and driftTwo is changing
+    cloudX=cloudX+drift;
+  };
+  // end of draw function
+
+  mouseMoved=function(){
+    if(xSprite<700 && ySprite<500){
+      drawBird(random(xBird),random(yBird),random(color(0,0,0)));
+    }//spawns the crows randomly in a certain domain and range
+    textFont(font,20);
+    text("Woah! Watch out!!!",xSide-80,ySide-80);//Moving your mouse will enrage the crows!
+  };//dialogue that appears when you move your mouse on top of side character
+
+  mouseDragged=function(){
+    fill(255,0,0);
+    drawFire(mouseX,mouseY,wFire,hFire);//the ellipse follows the user's mouse
+    if(wFire>60){
+    area--;
+    }
+    if(wFire<20){
+      area++;
+    }//ellipse shrinks and expands when you drag your mouse.
+    wFire=wFire+area;//same as previous animations (except with different variables)
+    hFire=hFire+area;
+    drawBird(random(xBird),random(yBird),random(color(0,0,0)));//creates a random colour for the crow's wings
+    fill(255,0,0);
+    text("These crows keep evading!",xSide-110,ySide-80);//dialogue that pops up above side character when you move your mouse
+    drawBird(random(xBird),random(yBird));//spawns the crows again, but this time when you drag your mouse
+    text("You've completed",740,355);//final dialogue that appears on top of the scarecrow
+    text("all the activities.",740,380);
+    text("Well done!",740,405);
+    };
+}};
+    // Get the canvas that Processing-js will use
+    var canvas = document.getElementById("mycanvas");
+    // Pass the function sketchProc (defined in myCode.js) to Processing's constructor.
+    var processingInstance = new Processing(canvas, sketchProc);
+ </script>
+
+</html>
